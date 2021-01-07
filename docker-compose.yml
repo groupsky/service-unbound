@@ -1,0 +1,18 @@
+version: '3.8'
+
+configs:
+  dns_a_records:
+    file: ${DNS_CONFIG_A_RECORDS_FILE}
+
+services:
+
+  unbound:
+    build: docker/unbound
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    configs:
+      - source: dns_a_records
+        target: /opt/unbound/etc/unbound/a-records.conf
+    volumes:
+      - ${DNS_CONFIG_A_RECORDS_FILE}:/opt/unbound/etc/unbound/a-records.conf:ro
