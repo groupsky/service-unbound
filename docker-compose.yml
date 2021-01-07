@@ -4,15 +4,24 @@ configs:
   dns_a_records:
     file: ${DNS_CONFIG_A_RECORDS_FILE}
 
+networks:
+  dmz:
+    ipam:
+      config:
+        - subnet: $DMZ_SUBNET
+
 services:
 
   unbound:
     build: docker/unbound
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
     configs:
       - source: dns_a_records
         target: /opt/unbound/etc/unbound/a-records.conf
+    restart: unless-stopped
+    networks:
+      dmz:
+        ipv4_address: $DNS_IP_ADDRESS
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ${DNS_CONFIG_A_RECORDS_FILE}:/opt/unbound/etc/unbound/a-records.conf:ro
