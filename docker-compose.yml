@@ -1,18 +1,22 @@
 version: '3.8'
 
 configs:
-  dns_a_records:
-    file: ${DNS_CONFIG_A_RECORDS_FILE}
+  unbound_a_records:
+    file: ${UNBOUND_CONFIG_A_RECORDS_FILE}
 
 services:
 
   unbound:
     build: docker/unbound
-    restart: unless-stopped
+    ports:
+      - "${UNBOUND_EXPOSE_PORT}:53/tcp"
+      - "${UNBOUND_EXPOSE_PORT}:53/udp"
+    restart: ${UNBOUND_RESTART_POLICY}
     security_opt:
       - no-new-privileges:true
     configs:
       - source: dns_a_records
         target: /opt/unbound/etc/unbound/a-records.conf
     volumes:
-      - ${DNS_CONFIG_A_RECORDS_FILE}:/opt/unbound/etc/unbound/a-records.conf:ro
+      # fallback in case configs are not working
+      - ${UNBOUND_CONFIG_A_RECORDS_FILE}:/opt/unbound/etc/unbound/a-records.conf:ro
