@@ -15,7 +15,7 @@ services:
     security_opt:
       - no-new-privileges:true
     configs:
-      - source: dns_a_records
+      - source: unbound_a_records
         target: /opt/unbound/etc/unbound/a-records.conf
     volumes:
       # fallback in case configs are not working
